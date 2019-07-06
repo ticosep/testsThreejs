@@ -21,15 +21,27 @@ class ThreeScene extends Component {
 
   setupModel = () => {
     // instantiate a loader
-    const loader = new FBXLoader();
+    let loader = new GLTFLoader();
+    loader.load(
+      '../models/texturafechadagltf.gltf',
+      (gltf) => {
+        // called when the resource is loaded
+        this.scene.add(gltf.scene);
 
-    loader.load('../models/potatosfbx.fbx', (object3d) => {
-      this.scene.add(object3d);
+        this.model = gltf.scene;
 
-      this.model = object3d;
+        this.start();
+      },
+      (xhr) => {
+        // called while loading is progressing
+        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
+      },
+      (error) => {
+        // called when loading has errors
+        console.error('An error happened', error);
+      },
+    );
 
-      this.start();
-    });
 
   }
 
@@ -38,6 +50,7 @@ class ThreeScene extends Component {
     this.setupScene();
     this.setupCamera();
     this.setupRenderer();
+    this.setupCubeMap();
     this.setupModel();
     this.setupLight();
     this.setupControls();
@@ -52,58 +65,78 @@ class ThreeScene extends Component {
 
   setupControls = () => {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.enableDamping = true
-    this.controls.dampingFactor = 0.25
-    this.controls.enableZoom = false
+
   }
 
   setupLight = () => {
-    const hlight = new THREE.AmbientLight(0x404040, 100);
-    this.scene.add(hlight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 100);
-    directionalLight.position.set(0, 1, 0);
-    directionalLight.castShadow = true;
-    this.scene.add(directionalLight);
-    const light = new THREE.PointLight(0xc4c4c4, 10);
-    light.position.set(0, 300, 500);
+
+    const light = new THREE.AmbientLight(0xffffff); // soft white light
     this.scene.add(light);
-    const light2 = new THREE.PointLight(0xc4c4c4, 10);
-    light2.position.set(500, 100, 0);
-    this.scene.add(light2);
-    const light3 = new THREE.PointLight(0xc4c4c4, 10);
-    light3.position.set(0, 100, -500);
-    this.scene.add(light3);
-    const light4 = new THREE.PointLight(0xc4c4c4, 10);
-    light4.position.set(-500, 300, 500);
-    this.scene.add(light4);
+
+  
   }
 
   setupRenderer = () => {
 
     //ADD RENDERER
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
-    this.renderer.setClearColor('#000000')
+    this.renderer.autoClear = false;
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(width, height)
     this.mount.appendChild(this.renderer.domElement)
 
+    this.renderer.gammaOutput = true;
+
+  }
+
+  setupCubeMap = () => {
+    const path = "../cubemap/";
+    const urls = [path + "posx.jpg", path + "negx.jpg",
+    path + "posy.jpg", path + "negy.jpg",
+    path + "posz.jpg", path + "negz.jpg"];
+
+    const textureCube = new THREE.CubeTextureLoader().load(urls);
+    textureCube.format = THREE.RGBFormat;
+    textureCube.mapping = THREE.CubeReflectionMapping;
+    textureCube.encoding = THREE.sRGBEncoding;
+
+
+    // Materials
+    const cubeShader = THREE.ShaderLib["cube"];
+    const cubeMaterial = new THREE.ShaderMaterial({
+      fragmentShader: cubeShader.fragmentShader,
+      vertexShader: cubeShader.vertexShader,
+      uniforms: cubeShader.uniforms,
+      depthWrite: false,
+      side: THREE.BackSide
+    });
+
+    cubeMaterial.uniforms["tCube"].value = textureCube;
+    Object.defineProperty(cubeMaterial, 'map', {
+
+      get: function () {
+
+        return this.uniforms.tCube.value;
+
+      }
+
+    });
+
+    // Skybox
+    const cubeMesh = new THREE.Mesh(new THREE.BoxBufferGeometry(100, 100, 100), cubeMaterial);
+    this.sceneCube.add(cubeMesh);
   }
   setupScene = () => {
     //ADD SCENE
     this.scene = new THREE.Scene();
-
-    this.scene.background = new THREE.Color(0xdddddd);
+    this.sceneCube = new THREE.Scene();
 
   }
 
   setupCamera = () => {
-    //ADD CAMERA
-    this.camera = new THREE.PerspectiveCamera(
-      75,
-      width / height,
-      0.1,
-      1000
-    )
-    this.camera.position.z = 4
+    this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
+    this.camera.position.set(0, 0, 4);
+    this.cameraCube = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
   }
 
   componentWillUnmount() {
@@ -126,7 +159,12 @@ class ThreeScene extends Component {
   }
 
   renderScene = () => {
-    this.renderer.render(this.scene, this.camera)
+
+    this.camera.lookAt(this.scene.position);
+    this.cameraCube.rotation.copy(this.camera.rotation);
+
+    this.renderer.render(this.sceneCube, this.cameraCube);
+    this.renderer.render(this.scene, this.camera);
   }
 
   render() {
