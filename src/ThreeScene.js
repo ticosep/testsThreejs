@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import * as THREE from "three";
 import * as OBJLoader from 'three-obj-loader';
+import * as GLTFLoader from 'three-gltf-loader';
+import * as FBXLoader from 'three-fbx-loader';
+import OrbitControls from 'three-orbitcontrols';
+
 OBJLoader(THREE);
+GLTFLoader(THREE);
+FBXLoader(THREE);
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -15,39 +21,15 @@ class ThreeScene extends Component {
 
   setupModel = () => {
     // instantiate a loader
-    const loader = new this.THREE.OBJLoader();
+    const loader = new FBXLoader();
 
-    // load a resource
-    loader.load(
-      // resource URL
-      '../models/FinalBaseMesh.obj',
-      // called when resource is loaded
-      (object) => {
+    loader.load('../models/potatosfbx.fbx', (object3d) => {
+      this.scene.add(object3d);
 
-        this.model = object;
+      this.model = object3d;
 
-        this.model.position.x = 0;
-        this.model.position.y = 0;
-        this.model.position.z = -50;
-
-        this.scene.add(this.model);
-
-        this.start();
-
-      },
-      // called when loading is in progresses
-      (xhr) => {
-
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-
-      },
-      // called when loading has errors
-      (error) => {
-
-        console.log(error);
-
-      }
-    );
+      this.start();
+    });
 
   }
 
@@ -58,6 +40,7 @@ class ThreeScene extends Component {
     this.setupRenderer();
     this.setupModel();
     this.setupLight();
+    this.setupControls();
 
 
 
@@ -67,10 +50,32 @@ class ThreeScene extends Component {
 
   }
 
+  setupControls = () => {
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls.enableDamping = true
+    this.controls.dampingFactor = 0.25
+    this.controls.enableZoom = false
+  }
+
   setupLight = () => {
-    this.light = new THREE.PointLight(0xff0000, 1, 100);
-    this.light.position.set(10, 10, 10);
-    this.scene.add(this.light);
+    const hlight = new THREE.AmbientLight(0x404040, 100);
+    this.scene.add(hlight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 100);
+    directionalLight.position.set(0, 1, 0);
+    directionalLight.castShadow = true;
+    this.scene.add(directionalLight);
+    const light = new THREE.PointLight(0xc4c4c4, 10);
+    light.position.set(0, 300, 500);
+    this.scene.add(light);
+    const light2 = new THREE.PointLight(0xc4c4c4, 10);
+    light2.position.set(500, 100, 0);
+    this.scene.add(light2);
+    const light3 = new THREE.PointLight(0xc4c4c4, 10);
+    light3.position.set(0, 100, -500);
+    this.scene.add(light3);
+    const light4 = new THREE.PointLight(0xc4c4c4, 10);
+    light4.position.set(-500, 300, 500);
+    this.scene.add(light4);
   }
 
   setupRenderer = () => {
@@ -85,6 +90,8 @@ class ThreeScene extends Component {
   setupScene = () => {
     //ADD SCENE
     this.scene = new THREE.Scene();
+
+    this.scene.background = new THREE.Color(0xdddddd);
 
   }
 
@@ -114,8 +121,6 @@ class ThreeScene extends Component {
   }
 
   animate = () => {
-    this.model.rotation.x += 0.01
-    this.model.rotation.y += 0.01
     this.renderScene()
     this.frameId = window.requestAnimationFrame(this.animate)
   }
