@@ -42,6 +42,8 @@ class ThreeScene extends Component {
 
         });
 
+
+        gltf.scene.position.set(-13,-2,5);
         this.start();
       },
       (xhr) => {
@@ -155,7 +157,7 @@ class ThreeScene extends Component {
 
   setupCamera = () => {
     this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
-    this.camera.position.set(0, 0, 10);
+    this.camera.position.set(0, 0, 4);
     this.cameraCube = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
   }
 
