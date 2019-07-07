@@ -20,15 +20,27 @@ class ThreeScene extends Component {
   }
 
   setupModel = () => {
+    this.loadModelByUrl('../models/nescauenbe.gltf');
+  }
+
+  loadModelByUrl = (url) => {
     // instantiate a loader
     let loader = new GLTFLoader();
     loader.load(
-      '../models/texturafechadagltf.gltf',
+      url,
       (gltf) => {
         // called when the resource is loaded
         this.scene.add(gltf.scene);
+        gltf.scene.traverse((child) => {
 
-        this.model = gltf.scene;
+          if (child instanceof THREE.Mesh) {
+
+            child.material.envMap = this.textureCube;
+            // add any other properties you want here. check the docs.
+
+          }
+
+        });
 
         this.start();
       },
@@ -41,8 +53,6 @@ class ThreeScene extends Component {
         console.error('An error happened', error);
       },
     );
-
-
   }
 
   componentDidMount() {
@@ -73,7 +83,17 @@ class ThreeScene extends Component {
     const light = new THREE.AmbientLight(0xffffff); // soft white light
     this.scene.add(light);
 
-  
+    const width = 5;
+    const height = 5;
+    const intensity = 1;
+    const rectLight = new THREE.RectAreaLight(0xffffff, intensity, width, height);
+    rectLight.position.set(10, 5, 0);
+    rectLight.lookAt(0, 0, 0);
+    this.scene.add(rectLight)
+
+    const rectLightHelper = new THREE.RectAreaLightHelper(rectLight);
+    rectLight.add(rectLightHelper);
+
   }
 
   setupRenderer = () => {
@@ -95,10 +115,10 @@ class ThreeScene extends Component {
     path + "posy.jpg", path + "negy.jpg",
     path + "posz.jpg", path + "negz.jpg"];
 
-    const textureCube = new THREE.CubeTextureLoader().load(urls);
-    textureCube.format = THREE.RGBFormat;
-    textureCube.mapping = THREE.CubeReflectionMapping;
-    textureCube.encoding = THREE.sRGBEncoding;
+    this.textureCube = new THREE.CubeTextureLoader().load(urls);
+    this.textureCube.format = THREE.RGBFormat;
+    this.textureCube.mapping = THREE.CubeReflectionMapping;
+    this.textureCube.encoding = THREE.sRGBEncoding;
 
 
     // Materials
@@ -111,7 +131,7 @@ class ThreeScene extends Component {
       side: THREE.BackSide
     });
 
-    cubeMaterial.uniforms["tCube"].value = textureCube;
+    cubeMaterial.uniforms["tCube"].value = this.textureCube;
     Object.defineProperty(cubeMaterial, 'map', {
 
       get: function () {
