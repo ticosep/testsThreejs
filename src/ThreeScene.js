@@ -9,8 +9,8 @@ OBJLoader(THREE);
 GLTFLoader(THREE);
 FBXLoader(THREE);
 
-const width = window.innerWidth;
-const height = window.innerHeight;
+const width = window.innerWidth / 2;
+const height = window.innerHeight / 2;
 
 class ThreeScene extends Component {
 
@@ -22,8 +22,10 @@ class ThreeScene extends Component {
   setupModel = () => {
     // instantiate a loader
     let loader = new GLTFLoader();
+    const {modelUrl} = this.props;
+
     loader.load(
-      '../models/monke.gltf',
+      modelUrl,
       (gltf) => {
         // called when the resource is loaded
         this.scene.add(gltf.scene);
@@ -53,6 +55,8 @@ class ThreeScene extends Component {
       },
     );
   }
+
+
 
 
   componentDidMount() {
@@ -158,8 +162,13 @@ class ThreeScene extends Component {
   }
 
   animate = () => {
-    this.model.rotation.x += 0.01
-    this.model.rotation.y += 0.01
+    const {spin} = this.props;
+
+    if(spin) {
+      this.model.rotation.x += 0.01
+      this.model.rotation.y += 0.01
+    }
+    
     this.renderScene()
     this.frameId = window.requestAnimationFrame(this.animate)
   }
