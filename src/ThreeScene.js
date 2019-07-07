@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Jumbotron, Button, Container, Row, Col } from "react-bootstrap";
+import { Jumbotron, Button, Container, Row, Col, Modal } from "react-bootstrap";
 import * as THREE from "three";
 import * as OBJLoader from 'three-obj-loader';
 import * as GLTFLoader from 'three-gltf-loader';
@@ -10,31 +10,47 @@ OBJLoader(THREE);
 GLTFLoader(THREE);
 FBXLoader(THREE);
 
-const width = window.innerWidth / 3;
-const height = window.innerHeight / 3;
+let width = window.innerWidth / 3;
+let height = window.innerHeight / 3;
 
 class ThreeScene extends Component {
 
   constructor(props) {
     super(props);
     this.THREE = THREE;
+
+    this.state = {
+      show: false
+
+    }
+
   }
+
+  // Handlers for the Modal
+  handleClose = () => {
+    this.setState({ show: false });
+  }
+
+  handleShow = () => {
+    this.setState({ show: true });
+  }
+
 
   setupModel = () => {
     // instantiate a loader
     let loader = new GLTFLoader();
-    const {modelUrl} = this.props;
+    const { modelUrl } = this.props;
 
     loader.load(
       modelUrl,
       (gltf) => {
         // called when the resource is loaded
         this.scene.add(gltf.scene);
-        
+
         gltf.scene.traverse((child) => {
 
           if (child instanceof THREE.Mesh) {
-                  
+
             child.material.envMap = this.textureCube;
             // add any other properties you want here. check the docs.
 
@@ -70,6 +86,8 @@ class ThreeScene extends Component {
     this.setupControls();
     this.setupModel();
 
+    window.addEventListener( 'resize', this.onWindowResize, false );
+
   }
 
   setupControls = () => {
@@ -82,7 +100,7 @@ class ThreeScene extends Component {
     const light = new THREE.AmbientLight(0xffffff); // soft white light
     this.scene.add(light);
 
-    
+
   }
 
   setupRenderer = () => {
@@ -163,13 +181,13 @@ class ThreeScene extends Component {
   }
 
   animate = () => {
-    const {spin} = this.props;
+    const { spin } = this.props;
 
-    if(spin) {
+    if (spin) {
       this.model.rotation.x += 0.01
       this.model.rotation.y += 0.01
     }
-    
+
     this.renderScene()
     this.frameId = window.requestAnimationFrame(this.animate)
   }
@@ -183,27 +201,59 @@ class ThreeScene extends Component {
     this.renderer.render(this.scene, this.camera);
   }
 
+  
+  onWindowResize = () => {
+    width = window.innerWidth / 3;
+    height = window.innerHeight / 3;
+
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+
+    this.cameraCube.aspect = window.innerWidth / window.innerHeight;
+    this.cameraCube.updateProjectionMatrix();
+
+    this.renderer.setSize( width, height );
+
+  }
+
   render() {
-    const {name} = this.props;
+    const { name } = this.props;
+    const closebutton = <Button variant="secondary" onClick={this.handleClose}>
+      Close
+            </Button>;
+
     return (
       <Jumbotron>
         <Container>
-        <Row>
+          <Row>
             <Col>
-                <div
-                  style={{ width, height }}
-                  ref={(mount) => { this.mount = mount }}
-                />
+              <div
+                style={{ width, height }}
+                ref={(mount) => { this.mount = mount }}
+              />
             </Col>
             <Col>
               <h4>A model running in three js with react, this one called {name}</h4>
-              <Button> Read About </Button>
+              <Button onClick={this.handleShow}> Read About </Button>
             </Col>
           </Row>
         </Container>
-         
+        <Container>
+          <Modal show={this.state.show} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>{name}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <h1> A simple gltf model loaded in a cube map</h1>
+            </Modal.Body>
+            <Modal.Footer>
+              {closebutton}
+            </Modal.Footer>
+          </Modal>
+        </Container>
+
       </Jumbotron>
-     
+
     )
   }
 }
