@@ -19,6 +19,18 @@ class Main extends Component {
             </Col>
          </Row>
 
+         <Row>
+            <Col>
+              <ThreeScene modelUrl={'../models/Table/scene.gltf'} name={'Table'} spin={false} scale={{x:0.1,y:0.1,z:0.1}}></ThreeScene>
+            </Col>
+         </Row>
+
+         <Row>
+            <Col>
+              <ThreeScene modelUrl={'../models/LilTokyo/scene.gltf'} name={'Lil tokyo'} spin={false} scale={{x:0.01,y:0.01,z:0.01}}></ThreeScene>
+            </Col>
+         </Row>
+
         </Container>
       </div>
 

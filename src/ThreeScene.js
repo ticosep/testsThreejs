@@ -39,7 +39,7 @@ class ThreeScene extends Component {
   setupModel = () => {
     // instantiate a loader
     let loader = new GLTFLoader();
-    const { modelUrl } = this.props;
+    const { modelUrl, scale } = this.props;
 
     loader.load(
       modelUrl,
@@ -59,6 +59,10 @@ class ThreeScene extends Component {
         });
 
         this.model = gltf.scene;
+
+        if(scale) {
+          this.model.scale.set(scale.x, scale.y, scale.z);
+        }
 
         this.start();
       },
