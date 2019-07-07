@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Jumbotron, Button, Container, Row, Col } from "react-bootstrap";
 import * as THREE from "three";
 import * as OBJLoader from 'three-obj-loader';
 import * as GLTFLoader from 'three-gltf-loader';
@@ -9,8 +10,8 @@ OBJLoader(THREE);
 GLTFLoader(THREE);
 FBXLoader(THREE);
 
-const width = window.innerWidth / 2;
-const height = window.innerHeight / 2;
+const width = window.innerWidth / 3;
+const height = window.innerHeight / 3;
 
 class ThreeScene extends Component {
 
@@ -183,11 +184,26 @@ class ThreeScene extends Component {
   }
 
   render() {
+    const {name} = this.props;
     return (
-      <div
-        style={{ width: '400px', height: '400px' }}
-        ref={(mount) => { this.mount = mount }}
-      />
+      <Jumbotron>
+        <Container>
+        <Row>
+            <Col>
+                <div
+                  style={{ width, height }}
+                  ref={(mount) => { this.mount = mount }}
+                />
+            </Col>
+            <Col>
+              <h4>A model running in three js with react, this one called {name}</h4>
+              <Button> Read About </Button>
+            </Col>
+          </Row>
+        </Container>
+         
+      </Jumbotron>
+     
     )
   }
 }
