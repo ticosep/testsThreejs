@@ -20,21 +20,18 @@ class ThreeScene extends Component {
   }
 
   setupModel = () => {
-    this.loadModelByUrl('../models/scene.gltf');
-  }
-
-  loadModelByUrl = (url) => {
     // instantiate a loader
     let loader = new GLTFLoader();
     loader.load(
-      url,
+      '../models/monke.gltf',
       (gltf) => {
         // called when the resource is loaded
         this.scene.add(gltf.scene);
+        
         gltf.scene.traverse((child) => {
 
           if (child instanceof THREE.Mesh) {
-
+                  
             child.material.envMap = this.textureCube;
             // add any other properties you want here. check the docs.
 
@@ -42,8 +39,8 @@ class ThreeScene extends Component {
 
         });
 
+        this.model = gltf.scene;
 
-        gltf.scene.position.set(-13,-2,5);
         this.start();
       },
       (xhr) => {
@@ -57,21 +54,16 @@ class ThreeScene extends Component {
     );
   }
 
+
   componentDidMount() {
 
     this.setupScene();
     this.setupCamera();
     this.setupRenderer();
     this.setupCubeMap();
-    this.setupModel();
     this.setupLight();
     this.setupControls();
-
-
-
-    const axesHelper = new THREE.AxesHelper(5);
-    this.scene.add(axesHelper);
-
+    this.setupModel();
 
   }
 
@@ -85,17 +77,7 @@ class ThreeScene extends Component {
     const light = new THREE.AmbientLight(0xffffff); // soft white light
     this.scene.add(light);
 
-    const width = 5;
-    const height = 5;
-    const intensity = 1;
-    const rectLight = new THREE.RectAreaLight(0xffffff, intensity, width, height);
-    rectLight.position.set(10, 5, 0);
-    rectLight.lookAt(0, 0, 0);
-    this.scene.add(rectLight)
-
-    const rectLightHelper = new THREE.RectAreaLightHelper(rectLight);
-    rectLight.add(rectLightHelper);
-
+    
   }
 
   setupRenderer = () => {
@@ -176,6 +158,8 @@ class ThreeScene extends Component {
   }
 
   animate = () => {
+    this.model.rotation.x += 0.01
+    this.model.rotation.y += 0.01
     this.renderScene()
     this.frameId = window.requestAnimationFrame(this.animate)
   }
