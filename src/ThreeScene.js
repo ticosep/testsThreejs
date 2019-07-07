@@ -20,7 +20,7 @@ class ThreeScene extends Component {
   }
 
   setupModel = () => {
-    this.loadModelByUrl('../models/nescauenbe.gltf');
+    this.loadModelByUrl('../models/scene.gltf');
   }
 
   loadModelByUrl = (url) => {
@@ -155,7 +155,7 @@ class ThreeScene extends Component {
 
   setupCamera = () => {
     this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
-    this.camera.position.set(0, 0, 4);
+    this.camera.position.set(0, 0, 10);
     this.cameraCube = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
   }
 
