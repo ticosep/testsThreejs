@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ThreeScene from './ThreeScene';
-import { Button, Container, Row, Col } from "react-bootstrap";
+import { Button, Container, Row, Col, ButtonGroup } from "react-bootstrap";
 
 class Main extends Component {
 
@@ -25,23 +25,26 @@ class Main extends Component {
 
   render() {
     return (
-      <Container>
-        <Row>
-          <Col>
+     <Container>
+       <Row>
+         <Col>
             <ThreeScene onRef={ref => (this.threejsScene = ref)}></ThreeScene>
-
-          </Col>
-        </Row>
-        <Row>
-          <Col>
+         </Col>
+       </Row>
+       <Row>
+         <Col>
+          <ButtonGroup>
             <Button onClick={() => this.loadModel('../models/Table/scene.gltf', { x: 0.1, y: 0.1, z: 0.1 })}>Ver mesa</Button>
             <Button onClick={() => this.loadModel('../models/chair/scene.gltf', { x: 0.005, y: 0.005, z: 0.005 })}>Ver cadeira</Button>
             <Button onClick={() => this.loadModel('../models/rounded_chair/scene.gltf')}>Ver cadeira redonda</Button>
-          </Col>
-        </Row>
+          </ButtonGroup>    
+         </Col>
+       </Row>
+     </Container> 
 
-      </Container>
-
+   
+    
+           
     )
   }
 }

@@ -11,8 +11,8 @@ OBJLoader(THREE);
 GLTFLoader(THREE);
 FBXLoader(THREE);
 
-let width = window.innerWidth / 2;
-let height = window.innerHeight / 2;
+let width = window.innerWidth /1.2;
+let height = window.innerHeight / 1.2;
 
 class ThreeScene extends Component {
 
@@ -170,8 +170,8 @@ class ThreeScene extends Component {
 
 
   onWindowResize = () => {
-    width = window.innerWidth / 3;
-    height = window.innerHeight / 3;
+    width = window.innerWidth / 1.2;
+    height = window.innerHeight / 1.2;
 
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
@@ -183,27 +183,22 @@ class ThreeScene extends Component {
   }
 
   render() {
-
+    const loaderDimension = 200;
     return (
-      <Container>
 
-        <div
-          style={{width, height, position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
-          ref={(mount) => { this.mount = mount }}
-        ></div>
-        <div style={{width, height, position: "fixed", top: "75%", left: "75%", transform: "translate(-75%, -75%)" }}>
-          <ClipLoader
-            sizeUnit={"px"}
-            size={200}
-            color={'#FFC300'}
-            loading={this.state.loading}
-          />
+        <div ref={(mount) => { this.mount = mount }}>
+            <div style={{position: 'absolute', top:`${height / 2 - loaderDimension/ 2}px`, right:`${width / 2 - loaderDimension/ 2}px`}}>
+              <ClipLoader
+                  sizeUnit={"px"}
+                  size={loaderDimension}
+                  color={'#FFC300'}
+                  loading={this.state.loading}
+                />
+            </div>
         </div>
 
-
-      </Container>
-
-    )
+       
+      )
   }
 }
 export default ThreeScene
