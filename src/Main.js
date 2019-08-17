@@ -1,38 +1,46 @@
 import React, { Component } from "react";
-import { Container, Row, Col } from "react-bootstrap";
 import ThreeScene from './ThreeScene';
+import { Button, Container, Row, Col } from "react-bootstrap";
 
 class Main extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      hasModel: false
+    }
+
+  }
+  loadModel = (modelUrl, scale) => {
+    if (this.state.hasModel) {
+      this.threejsScene.destroyModel();
+    }
+
+    this.threejsScene.setupModel({ modelUrl, scale });
+
+
+    this.setState({ hasModel: true });
+  }
+
   render() {
     return (
-      <div style={{backgroundColor: "#736F6E"}}>
-        <Container fluid={true}>
-          <Row>
-            <Col>
-              <ThreeScene modelUrl={'../models/nescauenbe.gltf'} name={'Nescau'}></ThreeScene>
-            </Col>
-          </Row>
+      <Container>
+        <Row>
+          <Col>
+            <ThreeScene onRef={ref => (this.threejsScene = ref)}></ThreeScene>
 
-          <Row>
-            <Col>
-              <ThreeScene modelUrl={'../models/monke.gltf'} name={'Monkey'} spin={true}></ThreeScene>
-            </Col>
-         </Row>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Button onClick={() => this.loadModel('../models/Table/scene.gltf', { x: 0.1, y: 0.1, z: 0.1 })}>Ver mesa</Button>
+            <Button onClick={() => this.loadModel('../models/chair/scene.gltf', { x: 0.005, y: 0.005, z: 0.005 })}>Ver cadeira</Button>
+            <Button onClick={() => this.loadModel('../models/rounded_chair/scene.gltf')}>Ver cadeira redonda</Button>
+          </Col>
+        </Row>
 
-         <Row>
-            <Col>
-              <ThreeScene modelUrl={'../models/Table/scene.gltf'} name={'Table'} spin={false} scale={{x:0.1,y:0.1,z:0.1}}></ThreeScene>
-            </Col>
-         </Row>
-
-         <Row>
-            <Col>
-              <ThreeScene modelUrl={'../models/LilTokyo/scene.gltf'} name={'Lil tokyo'} spin={false} scale={{x:0.01,y:0.01,z:0.01}}></ThreeScene>
-            </Col>
-         </Row>
-
-        </Container>
-      </div>
+      </Container>
 
     )
   }

@@ -1,17 +1,18 @@
 import React, { Component } from "react";
-import { Jumbotron, Button, Container, Row, Col, Modal } from "react-bootstrap";
 import * as THREE from "three";
 import * as OBJLoader from 'three-obj-loader';
 import * as GLTFLoader from 'three-gltf-loader';
 import * as FBXLoader from 'three-fbx-loader';
 import OrbitControls from 'three-orbitcontrols';
+import { Container } from "react-bootstrap";
+import { ClipLoader } from 'react-spinners';
 
 OBJLoader(THREE);
 GLTFLoader(THREE);
 FBXLoader(THREE);
 
-let width = window.innerWidth / 3;
-let height = window.innerHeight / 3;
+let width = window.innerWidth / 2;
+let height = window.innerHeight / 2;
 
 class ThreeScene extends Component {
 
@@ -20,55 +21,36 @@ class ThreeScene extends Component {
     this.THREE = THREE;
 
     this.state = {
-      show: false
-
+      loading: false
     }
 
   }
 
-  // Handlers for the Modal
-  handleClose = () => {
-    this.setState({ show: false });
+
+
+  destroyModel = () => {
+    this.scene.remove(this.model);
   }
 
-  handleShow = () => {
-    this.setState({ show: true });
-  }
-
-
-  setupModel = () => {
+  setupModel = ({ modelUrl, scale }) => {
     // instantiate a loader
     let loader = new GLTFLoader();
-    const { modelUrl, scale } = this.props;
 
     loader.load(
       modelUrl,
       (gltf) => {
         // called when the resource is loaded
         this.scene.add(gltf.scene);
-
-        gltf.scene.traverse((child) => {
-
-          if (child instanceof THREE.Mesh) {
-
-            child.material.envMap = this.textureCube;
-            // add any other properties you want here. check the docs.
-
-          }
-
-        });
-
         this.model = gltf.scene;
 
-        if(scale) {
+        if (scale) {
           this.model.scale.set(scale.x, scale.y, scale.z);
         }
 
-        this.start();
+        this.setState({ loading: false });
       },
-      (xhr) => {
-        // called while loading is progressing
-        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
+      () => {
+        this.setState({ loading: true });
       },
       (error) => {
         // called when loading has errors
@@ -85,12 +67,14 @@ class ThreeScene extends Component {
     this.setupScene();
     this.setupCamera();
     this.setupRenderer();
-    this.setupCubeMap();
     this.setupLight();
     this.setupControls();
-    this.setupModel();
 
-    window.addEventListener( 'resize', this.onWindowResize, false );
+    this.start();
+
+    this.props.onRef(this)
+
+    window.addEventListener('resize', this.onWindowResize, false);
 
   }
 
@@ -103,6 +87,12 @@ class ThreeScene extends Component {
 
     const light = new THREE.AmbientLight(0xffffff); // soft white light
     this.scene.add(light);
+
+    const color = 0xFFFFFF;
+    const intensity = 1;
+    const directlight = new THREE.DirectionalLight(color, intensity);
+    directlight.position.set(-1, 2, 4);
+    this.scene.add(directlight);
 
 
   }
@@ -120,7 +110,11 @@ class ThreeScene extends Component {
 
   }
 
-  setupCubeMap = () => {
+
+  setupScene = () => {
+    //ADD SCENE
+    this.scene = new THREE.Scene();
+
     const path = "../cubemap/";
     const urls = [path + "posx.jpg", path + "negx.jpg",
     path + "posy.jpg", path + "negy.jpg",
@@ -131,48 +125,19 @@ class ThreeScene extends Component {
     this.textureCube.mapping = THREE.CubeReflectionMapping;
     this.textureCube.encoding = THREE.sRGBEncoding;
 
-
-    // Materials
-    const cubeShader = THREE.ShaderLib["cube"];
-    const cubeMaterial = new THREE.ShaderMaterial({
-      fragmentShader: cubeShader.fragmentShader,
-      vertexShader: cubeShader.vertexShader,
-      uniforms: cubeShader.uniforms,
-      depthWrite: false,
-      side: THREE.BackSide
-    });
-
-    cubeMaterial.uniforms["tCube"].value = this.textureCube;
-    Object.defineProperty(cubeMaterial, 'map', {
-
-      get: function () {
-
-        return this.uniforms.tCube.value;
-
-      }
-
-    });
-
-    // Skybox
-    const cubeMesh = new THREE.Mesh(new THREE.BoxBufferGeometry(100, 100, 100), cubeMaterial);
-    this.sceneCube.add(cubeMesh);
-  }
-  setupScene = () => {
-    //ADD SCENE
-    this.scene = new THREE.Scene();
-    this.sceneCube = new THREE.Scene();
-
+    this.scene.background = this.textureCube;
   }
 
   setupCamera = () => {
     this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
     this.camera.position.set(0, 0, 4);
-    this.cameraCube = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
   }
 
   componentWillUnmount() {
-    this.stop()
-    this.mount.removeChild(this.renderer.domElement)
+    this.stop();
+    this.mount.removeChild(this.renderer.domElement);
+
+    this.props.onRef(undefined);
   }
   start = () => {
     if (!this.frameId) {
@@ -199,13 +164,11 @@ class ThreeScene extends Component {
   renderScene = () => {
 
     this.camera.lookAt(this.scene.position);
-    this.cameraCube.rotation.copy(this.camera.rotation);
 
-    this.renderer.render(this.sceneCube, this.cameraCube);
     this.renderer.render(this.scene, this.camera);
   }
 
-  
+
   onWindowResize = () => {
     width = window.innerWidth / 3;
     height = window.innerHeight / 3;
@@ -213,50 +176,32 @@ class ThreeScene extends Component {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
 
-    this.cameraCube.aspect = window.innerWidth / window.innerHeight;
-    this.cameraCube.updateProjectionMatrix();
 
-    this.renderer.setSize( width, height );
+
+    this.renderer.setSize(width, height);
 
   }
 
   render() {
-    const { name } = this.props;
-    const closebutton = <Button variant="secondary" onClick={this.handleClose}>
-      Close
-            </Button>;
 
     return (
-      <Jumbotron>
-        <Container>
-          <Row>
-            <Col>
-              <div
-                style={{ width, height }}
-                ref={(mount) => { this.mount = mount }}
-              />
-            </Col>
-            <Col>
-              <h4>A model running in three js with react, this one called {name}</h4>
-              <Button onClick={this.handleShow}> Read About </Button>
-            </Col>
-          </Row>
-        </Container>
-        <Container>
-          <Modal show={this.state.show} onHide={this.handleClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>{name}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <h1> A simple gltf model loaded in a cube map</h1>
-            </Modal.Body>
-            <Modal.Footer>
-              {closebutton}
-            </Modal.Footer>
-          </Modal>
-        </Container>
+      <Container>
 
-      </Jumbotron>
+        <div
+          style={{width, height, position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+          ref={(mount) => { this.mount = mount }}
+        ></div>
+        <div style={{width, height, position: "fixed", top: "75%", left: "75%", transform: "translate(-75%, -75%)" }}>
+          <ClipLoader
+            sizeUnit={"px"}
+            size={200}
+            color={'#FFC300'}
+            loading={this.state.loading}
+          />
+        </div>
+
+
+      </Container>
 
     )
   }
