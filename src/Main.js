@@ -2,17 +2,14 @@ import React, { Component } from "react";
 import ThreeScene from './ThreeScene';
 import { Carousel } from "react-bootstrap";
 
-const SCENES = [ <ThreeScene  modelUrl={'../models/Table/scene.gltf'} scale={{ x: 0.1, y: 0.1, z: 0.1 }}></ThreeScene>,
-<ThreeScene  modelUrl={'../models/chair/scene.gltf'} scale={{ x: 0.001, y: 0.001, z: 0.001 }}></ThreeScene>,
- <ThreeScene  modelUrl={'../models/rounded_chair/scene.gltf'} scale={{ x: 0.5, y: 0.5, z: 0.5 }}></ThreeScene>,
- <ThreeScene  modelUrl={'../models/Table/scene.gltf'} scale={{ x: 0.1, y: 0.1, z: 0.1 }}></ThreeScene>,
-<ThreeScene  modelUrl={'../models/chair/scene.gltf'} scale={{ x: 0.001, y: 0.001, z: 0.001 }}></ThreeScene>,
- <ThreeScene  modelUrl={'../models/rounded_chair/scene.gltf'} scale={{ x: 0.5, y: 0.5, z: 0.5 }}></ThreeScene>,
- <ThreeScene  modelUrl={'../models/Table/scene.gltf'} scale={{ x: 0.1, y: 0.1, z: 0.1 }}></ThreeScene>,
-<ThreeScene  modelUrl={'../models/chair/scene.gltf'} scale={{ x: 0.001, y: 0.001, z: 0.001 }}></ThreeScene>,
- <ThreeScene  modelUrl={'../models/rounded_chair/scene.gltf'} scale={{ x: 0.5, y: 0.5, z: 0.5 }}></ThreeScene>
-]
-
+const SCENE_INFOS = [ {threeJs: <ThreeScene  modelUrl={'../models/Table/scene.gltf'} scale={{ x: 0.1, y: 0.1, z: 0.1 }}></ThreeScene>, dataInfo: {header: 'Mesa', info: 'Mesa criada para festa'}},
+{threeJs: <ThreeScene  modelUrl={'../models/chair/scene.gltf'} scale={{ x: 0.003, y: 0.003, z: 0.003 }}></ThreeScene>, dataInfo: {header: 'Cadeira buteco', info: 'Aquela cadeira'}},
+{threeJs: <ThreeScene  modelUrl={'../models/rounded_chair/scene.gltf'} scale={{ x: 0.7, y: 0.7, z: 0.7 }}></ThreeScene>, dataInfo: {header: 'Cadeira redonda', info: 'Repare nos angulos'}},
+{threeJs: <ThreeScene  modelUrl={'../models/dna/scene.gltf'} scale={{ x: 0.04, y: 0.04, z: 0.04 }}></ThreeScene>, dataInfo: {header: 'DNA', info: 'Proteinas'}},
+{threeJs: <ThreeScene  modelUrl={'../models/vaso/scene.gltf'} scale={{ x: 0.05, y: 0.05, z: 0.05 }}></ThreeScene>, dataInfo: {header: 'Vaso', info: 'Vasou?'}},
+{threeJs: <ThreeScene  modelUrl={'../models/jupiter/scene.gltf'} scale={{ x: 0.5, y: 0.5, z: 0.5 }}></ThreeScene>, dataInfo: {header: 'Planeta', info: 'O maior'}},
+{threeJs: <ThreeScene  modelUrl={'../models/monstro/scene.gltf'} scale={{ x: 0.03, y: 0.03, z: 0.03 }}></ThreeScene>, dataInfo: {header: 'Grrr', info: 'grrrrr....'}}
+];
 const DEFAULT_EMPTY_DIV = <div style={{ width: window.innerWidth, height: window.innerHeight, backgroundColor:'black'}}></div>
 
 class Main extends Component {
@@ -34,13 +31,13 @@ class Main extends Component {
 
   getItens(selectedIndex) {
     const items = [];
-    for (const [index, scene] of SCENES.entries()) {
+    for (const [index, {threeJs, dataInfo}] of SCENE_INFOS.entries()) {
         if(index === selectedIndex) {
           items.push(<Carousel.Item>
-              {scene}
+              {threeJs}
               <Carousel.Caption>
-                <h3>Mesa</h3>
-                <p>Incrivel mesa</p>
+                <h3>{dataInfo.header}</h3>
+                <p>{dataInfo.info}</p>
               </Carousel.Caption>
             </Carousel.Item>);
        
@@ -49,8 +46,8 @@ class Main extends Component {
           items.push(<Carousel.Item>
               {DEFAULT_EMPTY_DIV}
               <Carousel.Caption>
-                <h3>Mesa</h3>
-                <p>Incrivel mesa</p>
+              <h3>{dataInfo.header}</h3>
+                <p>{dataInfo.info}</p>
               </Carousel.Caption>
             </Carousel.Item>);
        
