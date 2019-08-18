@@ -4,7 +4,7 @@ import * as OBJLoader from 'three-obj-loader';
 import * as GLTFLoader from 'three-gltf-loader';
 import * as FBXLoader from 'three-fbx-loader';
 import OrbitControls from 'three-orbitcontrols';
-import { Container } from "react-bootstrap";
+
 import { ClipLoader } from 'react-spinners';
 
 OBJLoader(THREE);
@@ -119,17 +119,17 @@ class ThreeScene extends Component {
     //ADD SCENE
     this.scene = new THREE.Scene();
 
-    const path = "../cubemap/";
-    const urls = [path + "posx.jpg", path + "negx.jpg",
-    path + "posy.jpg", path + "negy.jpg",
-    path + "posz.jpg", path + "negz.jpg"];
+    // const path = "../cubemap/";
+    // const urls = [path + "posx.jpg", path + "negx.jpg",
+    // path + "posy.jpg", path + "negy.jpg",
+    // path + "posz.jpg", path + "negz.jpg"];
 
-    this.textureCube = new THREE.CubeTextureLoader().load(urls);
-    this.textureCube.format = THREE.RGBFormat;
-    this.textureCube.mapping = THREE.CubeReflectionMapping;
-    this.textureCube.encoding = THREE.sRGBEncoding;
+    // this.textureCube = new THREE.CubeTextureLoader().load(urls);
+    // this.textureCube.format = THREE.RGBFormat;
+    // this.textureCube.mapping = THREE.CubeReflectionMapping;
+    // this.textureCube.encoding = THREE.sRGBEncoding;
 
-    this.scene.background = this.textureCube;
+    // this.scene.background = this.textureCube;
   }
 
   setupCamera = () => {
