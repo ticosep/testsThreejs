@@ -32,8 +32,15 @@ class ThreeScene extends Component {
 
 
 
-  destroyModel = () => {
-    this.scene.remove(this.model);
+  destroyScene = () => {
+
+      this.stop();
+      this.scene.dispose();
+  }
+
+  loadScene = () => {
+    this.start();
+
   }
 
   setupModel = () => {
@@ -77,6 +84,8 @@ class ThreeScene extends Component {
     this.setupControls();
     this.setupModel();
 
+    this.props.onRef(this);
+
 
     window.addEventListener('resize', this.onWindowResize, false);
 
@@ -92,11 +101,11 @@ class ThreeScene extends Component {
     const light = new THREE.AmbientLight(0xffffff); // soft white light
     this.scene.add(light);
 
-    const color = 0xFFFFFF;
-    const intensity = 1;
-    const directlight = new THREE.DirectionalLight(color, intensity);
-    directlight.position.set(-1, 2, 4);
-    this.scene.add(directlight);
+    // const color = 0xFFFFFF;
+    // const intensity = 1;
+    // const directlight = new THREE.DirectionalLight(color, intensity);
+    // directlight.position.set(-1, 2, 4);
+    // this.scene.add(directlight);
 
 
   }
@@ -104,7 +113,7 @@ class ThreeScene extends Component {
   setupRenderer = () => {
 
     //ADD RENDERER
-    this.renderer = new THREE.WebGLRenderer({ antialias: true })
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, precision: 'lowp' })
     this.renderer.autoClear = false;
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(width, height)
@@ -151,6 +160,8 @@ class ThreeScene extends Component {
 
   stop = () => {
     cancelAnimationFrame(this.frameId)
+    this.frameId = undefined;
+    
   }
 
   animate = () => {
