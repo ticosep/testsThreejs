@@ -70,7 +70,7 @@ class Main extends Component {
     
     return (
 
-      <Carousel interval={null} activeIndex={index} direction={direction} onSelect={this.handleSelect}>
+      <Carousel interval={null} activeIndex={index} direction={direction} onSelect={this.handleSelect} slide={false}>
         {items.map((item) => item)}
       </Carousel>
     )
