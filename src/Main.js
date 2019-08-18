@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ThreeScene from './ThreeScene';
-import { Button, Container, Row, Col, ButtonGroup } from "react-bootstrap";
+import { Carousel} from "react-bootstrap";
 
 class Main extends Component {
 
@@ -8,39 +8,40 @@ class Main extends Component {
     super(props);
 
     this.state = {
-      hasModel: false
     }
 
   }
-  loadModel = (modelUrl, scale) => {
-    if (this.state.hasModel) {
-      this.threejsScene.destroyModel();
-    }
 
-    this.threejsScene.setupModel({ modelUrl, scale });
-
-
-    this.setState({ hasModel: true });
-  }
 
   render() {
     return (
-     <Container>
-       <Row>
-         <Col>
-            <ThreeScene onRef={ref => (this.threejsScene = ref)}></ThreeScene>
-         </Col>
-       </Row>
-       <Row>
-         <Col>
-          <ButtonGroup>
-            <Button onClick={() => this.loadModel('../models/Table/scene.gltf', { x: 0.1, y: 0.1, z: 0.1 })}>Ver mesa</Button>
-            <Button onClick={() => this.loadModel('../models/chair/scene.gltf', { x: 0.005, y: 0.005, z: 0.005 })}>Ver cadeira</Button>
-            <Button onClick={() => this.loadModel('../models/rounded_chair/scene.gltf')}>Ver cadeira redonda</Button>
-          </ButtonGroup>    
-         </Col>
-       </Row>
-     </Container> 
+
+      <Carousel>
+        <Carousel.Item>
+              <ThreeScene modelUrl={'../models/Table/scene.gltf'} scale={{ x: 0.1, y: 0.1, z: 0.1 }}></ThreeScene>
+          <Carousel.Caption>
+            <h3>Mesa</h3>
+            <p>Incrivel mesa</p>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+                <ThreeScene modelUrl={'../models/chair/scene.gltf'} scale={{ x: 0.001, y: 0.001, z: 0.001 }}></ThreeScene>
+
+          <Carousel.Caption>
+            <h3>Cadeira show show</h3>
+            <p>é show</p>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+                <ThreeScene modelUrl={'../models/rounded_chair/scene.gltf'} scale={{ x: 0.5, y: 0.5, z: 0.5 }}></ThreeScene>
+
+          <Carousel.Caption>
+            <h3>Essa é redonda</h3>
+            <p>Olhe os angulos.</p>
+          </Carousel.Caption>
+        </Carousel.Item>
+      </Carousel>
+    
 
    
     

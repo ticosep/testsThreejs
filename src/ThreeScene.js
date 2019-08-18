@@ -11,8 +11,8 @@ OBJLoader(THREE);
 GLTFLoader(THREE);
 FBXLoader(THREE);
 
-let width = window.innerWidth /1.2;
-let height = window.innerHeight / 1.2;
+let width = window.innerWidth / 1;
+let height = window.innerHeight /  1;
 
 class ThreeScene extends Component {
 
@@ -20,8 +20,12 @@ class ThreeScene extends Component {
     super(props);
     this.THREE = THREE;
 
+    const {modelUrl, scale} = props;
+
     this.state = {
-      loading: false
+      loading: false,
+      modelUrl, 
+      scale
     }
 
   }
@@ -32,10 +36,10 @@ class ThreeScene extends Component {
     this.scene.remove(this.model);
   }
 
-  setupModel = ({ modelUrl, scale }) => {
+  setupModel = () => {
     // instantiate a loader
     let loader = new GLTFLoader();
-
+    const {modelUrl, scale} = this.state;
     loader.load(
       modelUrl,
       (gltf) => {
@@ -48,6 +52,8 @@ class ThreeScene extends Component {
         }
 
         this.setState({ loading: false });
+
+        this.start();
       },
       () => {
         this.setState({ loading: true });
@@ -69,10 +75,8 @@ class ThreeScene extends Component {
     this.setupRenderer();
     this.setupLight();
     this.setupControls();
+    this.setupModel();
 
-    this.start();
-
-    this.props.onRef(this)
 
     window.addEventListener('resize', this.onWindowResize, false);
 
@@ -170,8 +174,8 @@ class ThreeScene extends Component {
 
 
   onWindowResize = () => {
-    width = window.innerWidth / 1.2;
-    height = window.innerHeight / 1.2;
+    width = window.innerWidth /  1;
+    height = window.innerHeight /  1;
 
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
