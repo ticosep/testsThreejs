@@ -61,6 +61,7 @@ class ThreeScene extends Component {
         this.setState({ loading: false });
 
         this.start();
+        this.emit('started');
       },
       () => {
         this.setState({ loading: true });
@@ -84,15 +85,15 @@ class ThreeScene extends Component {
     this.setupControls();
     this.setupModel();
 
-    this.props.onRef(this);
-
-
+   
     window.addEventListener('resize', this.onWindowResize, false);
 
   }
 
   setupControls = () => {
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+
+    this.controls.enableZoom = false;
 
   }
 
@@ -150,7 +151,7 @@ class ThreeScene extends Component {
     this.stop();
     this.mount.removeChild(this.renderer.domElement);
 
-    this.props.onRef(undefined);
+    // this.props.onRef(undefined);
   }
   start = () => {
     if (!this.frameId) {
