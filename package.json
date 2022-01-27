@@ -10,7 +10,7 @@
     "react-native-view-shot": "^3.0.2",
     "react-scripts": "3.0.1",
     "react-spinners": "^0.5.12",
-    "three": "^0.105.2",
+    "three": "^0.137.0",
     "three-fbx-loader": "^1.0.3",
     "three-gltf-loader": "^1.106.0",
     "three-obj-loader": "^1.1.3",
